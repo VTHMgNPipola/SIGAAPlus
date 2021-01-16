@@ -6,7 +6,7 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-public class CustomFrame extends JFrame {
+public abstract class CustomFrame extends JFrame {
     private static Image icone;
 
     static {
@@ -28,4 +28,6 @@ public class CustomFrame extends JFrame {
             setIconImage(icone);
         }
     }
+
+    public abstract void iniciar();
 }

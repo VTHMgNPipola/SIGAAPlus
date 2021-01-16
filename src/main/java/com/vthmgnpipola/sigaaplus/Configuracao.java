@@ -1,5 +1,6 @@
 package com.vthmgnpipola.sigaaplus;
 
+import com.vthmgnpipola.sigaaplus.gui.DialogHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,9 +13,11 @@ import net.harawata.appdirs.AppDirsFactory;
 import okhttp3.OkHttpClient;
 
 public class Configuracao {
-    public static final String PROPERTY_TEMA = "tema";
-    public static final String PROPERTY_URL_SIGAAPIFSC = "sigaapifsc.url";
-    public static final String PROPERTY_JWT_PERSISTENTE = "jwt";
+    public static final String PROPRIEDADE_TEMA = "tema";
+    public static final String PROPRIEDADE_URL_SIGAAPIFSC = "sigaapifsc.url";
+    public static final String PROPRIEDADE_JWT_PERSISTENTE = "jwt";
+    public static final String PROPRIEDADE_HOME_DIMENSAO = "home.dimensao";
+    public static final String PROPRIEDADE_HOME_MAXIMIZADA = "home.maximizada";
 
     private static Properties properties;
     private static final Path dataDirectory;
@@ -64,6 +67,10 @@ public class Configuracao {
         return properties.getProperty(key);
     }
 
+    public static void removeProperty(String key) {
+        properties.remove(key);
+    }
+
     public static void setTokenJwt(String tokenJwt) {
         Configuracao.tokenJwt = tokenJwt;
     }
@@ -72,8 +79,14 @@ public class Configuracao {
         return tokenJwt;
     }
 
-    public static URL getSigaapifscUrl() throws MalformedURLException {
-        return new URL(properties.getProperty(PROPERTY_URL_SIGAAPIFSC));
+    public static URL getSigaapifscUrl() {
+        try {
+            return new URL(properties.getProperty(PROPRIEDADE_URL_SIGAAPIFSC));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            DialogHelper.mostrarErro(null, "A URL para o Sigaapifsc configurada é inválida!");
+            return null;
+        }
     }
 
     public static OkHttpClient getHttpClient() {

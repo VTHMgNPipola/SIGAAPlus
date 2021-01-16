@@ -21,7 +21,16 @@ import okhttp3.Response;
 public class LoginSigaapifscFrame extends CustomFrame {
     public LoginSigaapifscFrame(boolean centered) {
         super("SIGAAPlus - Login Sigaapifsc", centered);
+    }
 
+    @Override
+    public void iniciar() {
+        if (Configuracao.getProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE) != null) {
+            proximaJanela();
+            return;
+        }
+
+        // Inicialização da janela
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         Insets insets = new Insets(0, 5, 5, 5);
@@ -119,7 +128,7 @@ public class LoginSigaapifscFrame extends CustomFrame {
             } catch (IOException e) {
                 e.printStackTrace();
                 DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "Ocorreu um " +
-                                "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
+                        "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
                         "para o Sigaapifsc!");
                 return;
             }
@@ -127,8 +136,8 @@ public class LoginSigaapifscFrame extends CustomFrame {
             // Processa a resposta
             if (response.code() == 401) { // Credenciais inválidas
                 DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "Credenciais " +
-                                "inválidas! Verifique suas credenciais, ou então crie uma conta no Sigaapifsc " +
-                                "(não é a mesma do SIGAA).");
+                        "inválidas! Verifique suas credenciais, ou então crie uma conta no Sigaapifsc " +
+                        "(não é a mesma do SIGAA).");
             } else if (response.code() == 200) { // Sucesso
                 String tokenJwt;
                 try {
@@ -136,17 +145,17 @@ public class LoginSigaapifscFrame extends CustomFrame {
                 } catch (IOException e) {
                     e.printStackTrace();
                     DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "A autenticação " +
-                                    "foi bem sucedida, mas houve um erro ao analisar a resposta enviada!");
+                            "foi bem sucedida, mas houve um erro ao analisar a resposta enviada!");
                     return;
                 }
 
                 Configuracao.setTokenJwt(tokenJwt);
                 if (lembrarUsuarioCheckBox.isSelected()) {
-                    Configuracao.setProperty(Configuracao.PROPERTY_JWT_PERSISTENTE, tokenJwt);
+                    Configuracao.setProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE, tokenJwt);
                 }
 
                 // Inicia o resto do SIGAAPlus
-                dispose();
+                proximaJanela();
             }
         });
         c.gridx = 1;
@@ -161,5 +170,13 @@ public class LoginSigaapifscFrame extends CustomFrame {
         pack();
         setSize(350, getHeight());
         setResizable(false);
+        setVisible(true);
+    }
+
+    private void proximaJanela() {
+        // TODO: Passar para a janela de login no SIGAA, que então passará para a Home
+        HomeFrame homeFrame = new HomeFrame(true);
+        homeFrame.iniciar();
+        dispose();
     }
 }
