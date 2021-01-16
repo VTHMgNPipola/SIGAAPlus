@@ -1,12 +1,15 @@
 package com.vthmgnpipola.sigaaplus.gui;
 
 import com.vthmgnpipola.sigaaplus.Configuracao;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -70,6 +73,36 @@ public class HomeFrame extends CustomFrame {
         // Adiciona os menus para a barra
         menuBar.add(editarMenu);
 
+        /*
+        Componentes
+         */
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+        // Aba de turmas
+        JPanel turmas = new JPanel();
+        tabbedPane.addTab("Turmas", turmas);
+
+        // Aba de tarefas
+        JPanel tarefas = new JPanel();
+        tabbedPane.addTab("Tarefas", tarefas);
+
+        // Aba de notícias
+        JPanel noticias = new JPanel();
+        tabbedPane.addTab("Notícias", noticias);
+
+        // Aba de fóruns
+        JPanel foruns = new JPanel();
+        tabbedPane.addTab("Fóruns", foruns);
+
+        // Aba de mensagens
+        JPanel mensagens = new JPanel();
+        tabbedPane.addTab("Mensagens", mensagens);
+
+        contentPane.add(tabbedPane, BorderLayout.CENTER);
+
+        setContentPane(contentPane);
+
         // TODO: Adicionar listener para o estado de maximização da janela
         // Listener para o tamanho da janela
         addComponentListener(new ComponentAdapter() {
@@ -90,11 +123,12 @@ public class HomeFrame extends CustomFrame {
         }
         setSize(width, height);
 
+        // Configura e torna visível a janela
         setJMenuBar(menuBar);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
 
-        // Define se a janela estará maximizada;
+        // Define se a janela estará maximizada
         String maximizada = Configuracao.getProperty(Configuracao.PROPRIEDADE_HOME_MAXIMIZADA);
         if (Boolean.parseBoolean(maximizada)) {
             setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
