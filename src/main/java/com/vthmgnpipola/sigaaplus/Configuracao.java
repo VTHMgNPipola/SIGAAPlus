@@ -13,9 +13,7 @@ import okhttp3.OkHttpClient;
 
 public class Configuracao {
     public static final String PROPERTY_TEMA = "tema";
-
     public static final String PROPERTY_URL_SIGAAPIFSC = "sigaapifsc.url";
-
     public static final String PROPERTY_JWT_PERSISTENTE = "jwt";
 
     private static Properties properties;
