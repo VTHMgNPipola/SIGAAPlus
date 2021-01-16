@@ -19,10 +19,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginSigaapifscFrame extends CustomFrame {
-    private static final String TITULO = "SIGAAPlus - Login Sigaapifsc";
-
     public LoginSigaapifscFrame(boolean centered) {
-        super(TITULO, centered);
+        super("SIGAAPlus - Login Sigaapifsc", centered);
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
