@@ -13,15 +13,6 @@ import okhttp3.OkHttpClient;
 
 public class Configuracao {
     public static final String PROPERTY_TEMA = "tema";
-    public static final String TEMA_LIGHT = "light";
-    public static final String TEMA_DARK = "dark";
-    public static final String TEMA_INTELLIJ = "intellij";
-    public static final String TEMA_DARCULA = "darcula";
-    public static final String TEMA_METAL = "metal";
-    public static final String TEMA_NIMBUS = "nimbus";
-    public static final String TEMA_MOTIF = "motif";
-    public static final String TEMA_GTK = "gtk";
-    public static final String TEMA_WINDOWS = "windows";
 
     public static final String PROPERTY_URL_SIGAAPIFSC = "sigaapifsc.url";
 

@@ -1,8 +1,11 @@
 package com.vthmgnpipola.sigaaplus;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.sigaaplus.gui.DialogHelper;
-import com.vthmgnpipola.sigaaplus.gui.LoginSigaapifscFrame;
+import com.vthmgnpipola.sigaaplus.gui.HomeFrame;
 import java.io.IOException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -29,25 +32,18 @@ public class SigaaPlusApplication {
             }
         }));
 
+        // Instala o info dos temas FlatLaf
+        FlatLightLaf.installLafInfo();
+        FlatDarkLaf.installLafInfo();
+        FlatIntelliJLaf.installLafInfo();
+        FlatDarculaLaf.installLafInfo();
+
         // Instala o tema
         String tema = Configuracao.getProperty(Configuracao.PROPERTY_TEMA);
         if (tema == null) {
             FlatIntelliJLaf.install();
         } else {
-            String laf;
-            switch (tema) {
-                case Configuracao.TEMA_LIGHT -> laf = "com.formdev.flatlaf.FlatLightLaf";
-                case Configuracao.TEMA_DARK -> laf = "com.formdev.flatlaf.FlatDarkLaf";
-                case Configuracao.TEMA_INTELLIJ -> laf = "com.formdev.flatlaf.FlatIntelliJLaf";
-                case Configuracao.TEMA_DARCULA -> laf = "com.formdev.flatlaf.FlatDarculaLaf";
-                case Configuracao.TEMA_NIMBUS -> laf = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
-                case Configuracao.TEMA_MOTIF -> laf = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-                case Configuracao.TEMA_GTK -> laf = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-                case Configuracao.TEMA_WINDOWS -> laf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-                default -> laf = "javax.swing.plaf.metal.MetalLookAndFeel";
-            }
-
-            UIManager.setLookAndFeel(laf);
+            UIManager.setLookAndFeel(tema);
         }
 
         // Define a URL do Sigaapifsc
@@ -61,8 +57,10 @@ public class SigaaPlusApplication {
     }
 
     public void iniciar() {
-        LoginSigaapifscFrame loginSigaapifscFrame = new LoginSigaapifscFrame(true);
-        loginSigaapifscFrame.setVisible(true);
+        //LoginSigaapifscFrame loginSigaapifscFrame = new LoginSigaapifscFrame(true);
+        //loginSigaapifscFrame.setVisible(true);
+        HomeFrame homeFrame = new HomeFrame(true);
+        homeFrame.setVisible(true);
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException,
