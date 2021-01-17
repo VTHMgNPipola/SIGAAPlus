@@ -3,14 +3,13 @@ package com.vthmgnpipola.sigaaplus.gui;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vthmgnpipola.sigaaplus.Configuracao;
+import com.vthmgnpipola.sigaaplus.SigaapifscHelper;
 import com.vthmgnpipola.sigaaplus.model.Turma;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.JPanel;
@@ -30,19 +29,7 @@ public class TurmasPanel extends JPanel {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
 
-        URL urlTurmas;
-        try {
-            urlTurmas = new URL(Configuracao.getSigaapifscUrl(), "/turmas/");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            DialogHelper.mostrarErroFatal(this, "Ocorreu um " +
-                    "erro ao formar a URL para acessar o Sigaapifsc!");
-            return;
-        }
-        Request requestTurmas = new Request.Builder()
-                .url(urlTurmas)
-                .addHeader("Authorization", "Bearer " + Configuracao.getTokenJwt())
-                .build();
+        Request requestTurmas = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_TURMAS).build();
 
         Call call = Configuracao.getHttpClient().newCall(requestTurmas);
         call.enqueue(new Callback() {
@@ -56,6 +43,7 @@ public class TurmasPanel extends JPanel {
                 if (response.code() == 200) {
                     ObjectMapper mapper = new ObjectMapper();
                     String responseBody = Objects.requireNonNull(response.body()).string();
+                    Objects.requireNonNull(response.body()).close();
 
                     List<Turma> turmas = mapper.readValue(responseBody, new TypeReference<>() {});
                     for (int i = 0; i < turmas.size(); i++) {

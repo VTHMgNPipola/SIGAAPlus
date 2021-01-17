@@ -1,10 +1,13 @@
 package com.vthmgnpipola.sigaaplus.gui;
 
 import com.vthmgnpipola.sigaaplus.Configuracao;
+import com.vthmgnpipola.sigaaplus.SigaapifscHelper;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -24,25 +27,18 @@ public class LoginSigaaFrame extends CustomFrame {
     @Override
     public void iniciar() {
         // Verifica se o usuário ainda tem uma sessão ativa
-        Request requestPing = new Request.Builder()
-                .url(Configuracao.URL_PING)
-                .addHeader("Authorization", "Bearer " + Configuracao.getTokenJwt())
-                .build();
-
-        Response responsePing;
-        try {
-            responsePing = Configuracao.getHttpClient().newCall(requestPing).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-            DialogHelper.mostrarErroFatal(this, "Ocorreu um " +
-                    "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
-                    "para o Sigaapifsc!");
+        Request requestPing = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_PING).build();
+        Optional<Response> responseOptional = SigaapifscHelper.executarRequestSincrona(requestPing);
+        if (responseOptional.isEmpty()) {
             return;
         }
-        if (responsePing.code() == 200) {
+        Response responsePing = responseOptional.get();
+
+        if (responsePing.code() == 200) { // Caso a sessão ainda seja válida
             proximaJanela();
             return;
-        } else if (Configuracao.getProperty(Configuracao.PROPRIEDADE_SENHA_SIGAA) != null) {
+        } else if (Configuracao.getProperty(Configuracao.PROPRIEDADE_SENHA_SIGAA) != null) { // Caso a sessão seja
+            // inválida, mas a senha do SIGAA esteja salva
             logar(Configuracao.getProperty(Configuracao.PROPRIEDADE_SENHA_SIGAA), false);
         }
 
@@ -74,6 +70,20 @@ public class LoginSigaaFrame extends CustomFrame {
 
         JTextField usuarioField = new JTextField();
         usuarioField.setEnabled(false);
+        // Insere o nome de usuário no field
+        Request requestNome = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_NOME).build();
+        @SuppressWarnings("OptionalGetWithoutIsPresent") // Não é necessário checar se existe ou não, pois a checagem já
+        // foi feita anteriormente
+        Response responseNome = SigaapifscHelper.executarRequestSincrona(requestNome).get();
+        try {
+            usuarioField.setText(Objects.requireNonNull(responseNome.body()).string());
+            Objects.requireNonNull(responseNome.body()).close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            DialogHelper.mostrarErro(this, "Não foi possível ler a resposta do Sigaapifsc " +
+                    "(requisição: nome do usuário)!");
+        }
+
         c.gridx = 1;
         c.gridy = 1;
         c.weightx = 1;
@@ -107,6 +117,23 @@ public class LoginSigaaFrame extends CustomFrame {
         c.anchor = GridBagConstraints.LINE_START;
         panel.add(lembrarUsuarioCheckBox, c);
 
+        // Botão sair
+        JButton sairButton = new JButton("Sair");
+        sairButton.addActionListener(event -> {
+            Configuracao.removeProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
+            Configuracao.setTokenJwt(null);
+            LoginSigaapifscFrame loginSigaapifscFrame = new LoginSigaapifscFrame(true);
+            loginSigaapifscFrame.iniciar();
+            dispose();
+        });
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 1;
+        c.weightx = 0;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.LINE_START;
+        panel.add(sairButton, c);
+
         // Botão de login
         JButton entrarButton = new JButton("Entrar");
         entrarButton.addActionListener(event -> {
@@ -117,6 +144,7 @@ public class LoginSigaaFrame extends CustomFrame {
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.LINE_END;
+        getRootPane().setDefaultButton(entrarButton);
         panel.add(entrarButton, c);
 
         setContentPane(panel);
@@ -129,23 +157,16 @@ public class LoginSigaaFrame extends CustomFrame {
 
     private void logar(String senha, boolean lembrarUsuario) {
         // Envia a requisição
-        Request request = new Request.Builder()
-                .url(Configuracao.URL_LOGIN)
-                .addHeader("Authorization", "Bearer " + Configuracao.getTokenJwt())
+        Request request = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_LOGIN)
                 .addHeader("X-Senha-Sigaa", senha)
                 .post(RequestBody.create(new byte[0]))
                 .build();
 
-        Response response;
-        try {
-            response = Configuracao.getHttpClient().newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-            DialogHelper.mostrarErroFatal(LoginSigaaFrame.this, "Ocorreu um " +
-                    "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
-                    "para o Sigaapifsc!");
+        Optional<Response> responseOptional = SigaapifscHelper.executarRequestSincrona(request);
+        if (responseOptional.isEmpty()) {
             return;
         }
+        Response response = responseOptional.get();
 
         // Processa a resposta
         if (response.code() == 404) { // Credenciais inválidas

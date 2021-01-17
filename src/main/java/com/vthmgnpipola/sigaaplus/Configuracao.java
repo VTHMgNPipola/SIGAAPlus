@@ -21,9 +21,13 @@ public class Configuracao {
     public static final String PROPRIEDADE_HOME_MAXIMIZADA = "home.maximizada";
     public static final String PROPRIEDADE_SENHA_SIGAA = "sigaa.senha";
 
-    public static URL URL_AUTENTICACAO;
+    public static URL URL_CADASTRAR;
+    public static URL URL_AUTENTICAR;
     public static URL URL_LOGIN;
     public static URL URL_PING;
+    public static URL URL_NOME;
+
+    public static URL URL_TURMAS;
 
     private static Properties properties;
     private static final Path dataDirectory;
@@ -67,9 +71,13 @@ public class Configuracao {
 
     public static void inicializarUrls() {
         try {
-            URL_LOGIN = new URL(Configuracao.getSigaapifscUrl(), "/acesso/logar");
-            URL_AUTENTICACAO = new URL(Configuracao.getSigaapifscUrl(), "/acesso/autenticar");
-            URL_PING = new URL(Configuracao.getSigaapifscUrl(), "/acesso/ping");
+            URL_CADASTRAR = new URL(getSigaapifscUrl(), "/acesso/cadastrar");
+            URL_LOGIN = new URL(getSigaapifscUrl(), "/acesso/logar");
+            URL_AUTENTICAR = new URL(getSigaapifscUrl(), "/acesso/autenticar");
+            URL_PING = new URL(getSigaapifscUrl(), "/acesso/ping");
+            URL_NOME = new URL(getSigaapifscUrl(), "/acesso/nome");
+
+            URL_TURMAS = new URL(getSigaapifscUrl(), "/turmas/");
         } catch (MalformedURLException e) {
             e.printStackTrace();
             DialogHelper.mostrarErroFatal(null, "Ocorreu um " +

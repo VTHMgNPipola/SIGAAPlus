@@ -1,11 +1,13 @@
 package com.vthmgnpipola.sigaaplus.gui;
 
 import com.vthmgnpipola.sigaaplus.Configuracao;
+import com.vthmgnpipola.sigaaplus.SigaapifscHelper;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -25,9 +27,20 @@ public class LoginSigaapifscFrame extends CustomFrame {
     public void iniciar() {
         String jwt = Configuracao.getProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
         if (jwt != null) {
-            Configuracao.setTokenJwt(jwt);
-            proximaJanela();
-            return;
+            Request request = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_NOME).build();
+            Optional<Response> responseOptional = SigaapifscHelper.executarRequestSincrona(request);
+            if (responseOptional.isEmpty()) {
+                return;
+            }
+            Response response = responseOptional.get();
+
+            if (response.code() == 200) {
+                Configuracao.setTokenJwt(jwt);
+                proximaJanela();
+                return;
+            } else {
+                Configuracao.removeProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
+            }
         }
 
         // Inicialização da janela
@@ -65,7 +78,7 @@ public class LoginSigaapifscFrame extends CustomFrame {
         panel.add(usuarioField, c);
 
         // Campo de senha
-        JLabel senhaLabel = new JLabel("Nome de Usuário");
+        JLabel senhaLabel = new JLabel("Senha Sigaapifsc");
         c.gridx = 0;
         c.gridy = 2;
         c.weightx = 0;
@@ -92,6 +105,11 @@ public class LoginSigaapifscFrame extends CustomFrame {
 
         // Botão de cadastro
         JButton cadastrarButton = new JButton("Cadastrar-se");
+        cadastrarButton.addActionListener(event -> {
+            CadastrarSigaapifscFrame cadastrarSigaapifscFrame = new CadastrarSigaapifscFrame(true);
+            cadastrarSigaapifscFrame.iniciar();
+            dispose();
+        });
         c.gridx = 0;
         c.gridy = 4;
         c.gridwidth = 1;
@@ -104,23 +122,17 @@ public class LoginSigaapifscFrame extends CustomFrame {
         JButton entrarButton = new JButton("Entrar");
         entrarButton.addActionListener(event -> {
             // Envia a requisição
-            Request request = new Request.Builder()
-                    .url(Configuracao.URL_AUTENTICACAO)
+            Request request = SigaapifscHelper.construirRequest(Configuracao.URL_AUTENTICAR)
                     .addHeader("X-Usuario", usuarioField.getText())
                     .addHeader("X-Senha", new String(senhaField.getPassword()))
                     .post(RequestBody.create(new byte[0]))
                     .build();
 
-            Response response;
-            try {
-                response = Configuracao.getHttpClient().newCall(request).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-                DialogHelper.mostrarErroFatal(LoginSigaapifscFrame.this, "Ocorreu um " +
-                        "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
-                        "para o Sigaapifsc!");
+            Optional<Response> responseOptional = SigaapifscHelper.executarRequestSincrona(request);
+            if (responseOptional.isEmpty()) {
                 return;
             }
+            Response response = responseOptional.get();
 
             // Processa a resposta
             if (response.code() == 401) { // Credenciais inválidas
@@ -131,6 +143,7 @@ public class LoginSigaapifscFrame extends CustomFrame {
                 String tokenJwt;
                 try {
                     tokenJwt = Objects.requireNonNull(response.body()).string();
+                    Objects.requireNonNull(response.body()).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                     DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "A autenticação " +
@@ -152,6 +165,7 @@ public class LoginSigaapifscFrame extends CustomFrame {
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.LINE_END;
+        getRootPane().setDefaultButton(entrarButton);
         panel.add(entrarButton, c);
 
         setContentPane(panel);

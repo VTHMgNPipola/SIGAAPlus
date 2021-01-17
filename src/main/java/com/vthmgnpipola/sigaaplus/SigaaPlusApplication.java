@@ -25,6 +25,7 @@ public class SigaaPlusApplication {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 Configuracao.salvarPropriedades();
+                System.out.println("Propriedades salvas");
             } catch (IOException e) {
                 e.printStackTrace();
                 DialogHelper.mostrarErro(null, "Não foi possível salvar o arquivo de propriedades do " +
