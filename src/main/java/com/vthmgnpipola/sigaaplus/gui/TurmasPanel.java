@@ -35,7 +35,7 @@ public class TurmasPanel extends JPanel {
             urlTurmas = new URL(Configuracao.getSigaapifscUrl(), "/turmas/");
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(this, "Ocorreu um " +
+            DialogHelper.mostrarErroFatal(this, "Ocorreu um " +
                     "erro ao formar a URL para acessar o Sigaapifsc!");
             return;
         }

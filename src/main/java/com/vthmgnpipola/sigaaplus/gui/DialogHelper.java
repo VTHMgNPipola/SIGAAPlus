@@ -8,6 +8,11 @@ public class DialogHelper {
         JOptionPane.showMessageDialog(pai, mensagem, "Erro!", JOptionPane.ERROR_MESSAGE);
     }
 
+    public static void mostrarErroFatal(Component pai, String mensagem) {
+        JOptionPane.showMessageDialog(pai, mensagem, "Erro!", JOptionPane.ERROR_MESSAGE);
+        System.exit(-1);
+    }
+
     public static int mostrarConfirmacao(Component pai, String mensagem, int tipo) {
         return JOptionPane.showConfirmDialog(pai, mensagem, "Tem certeza?", tipo);
     }

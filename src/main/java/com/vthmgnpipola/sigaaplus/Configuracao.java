@@ -72,7 +72,7 @@ public class Configuracao {
             URL_PING = new URL(Configuracao.getSigaapifscUrl(), "/acesso/ping");
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(null, "Ocorreu um " +
+            DialogHelper.mostrarErroFatal(null, "Ocorreu um " +
                     "erro ao formar a URL para acessar o Sigaapifsc!");
 
             String urlSigaapifsc = JOptionPane.showInputDialog(
@@ -109,7 +109,7 @@ public class Configuracao {
             return new URL(properties.getProperty(PROPRIEDADE_URL_SIGAAPIFSC));
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(null, "A URL para o Sigaapifsc configurada é inválida!");
+            DialogHelper.mostrarErroFatal(null, "A URL para o Sigaapifsc configurada é inválida!");
             return null;
         }
     }

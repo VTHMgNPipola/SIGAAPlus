@@ -34,7 +34,7 @@ public class LoginSigaaFrame extends CustomFrame {
             responsePing = Configuracao.getHttpClient().newCall(requestPing).execute();
         } catch (IOException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(this, "Ocorreu um " +
+            DialogHelper.mostrarErroFatal(this, "Ocorreu um " +
                     "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
                     "para o Sigaapifsc!");
             return;
@@ -141,7 +141,7 @@ public class LoginSigaaFrame extends CustomFrame {
             response = Configuracao.getHttpClient().newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(LoginSigaaFrame.this, "Ocorreu um " +
+            DialogHelper.mostrarErroFatal(LoginSigaaFrame.this, "Ocorreu um " +
                     "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
                     "para o Sigaapifsc!");
             return;

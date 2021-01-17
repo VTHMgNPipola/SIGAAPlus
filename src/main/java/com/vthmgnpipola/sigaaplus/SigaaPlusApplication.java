@@ -42,7 +42,7 @@ public class SigaaPlusApplication {
             ge.registerFont(firaCodeRetina);
         } catch (FontFormatException e) {
             e.printStackTrace();
-            DialogHelper.mostrarErro(null, "Erro ao carregar a fonte incluída! Isso não deveria " +
+            DialogHelper.mostrarErroFatal(null, "Erro ao carregar a fonte incluída! Isso não deveria " +
                     "ocorrer, a menos que o arquivo do SIGAAPlus tenha sido alterado, portanto tente instalá-lo " +
                     "novamente.");
         }

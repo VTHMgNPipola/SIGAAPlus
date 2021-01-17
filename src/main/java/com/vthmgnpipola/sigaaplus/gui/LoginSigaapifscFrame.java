@@ -116,7 +116,7 @@ public class LoginSigaapifscFrame extends CustomFrame {
                 response = Configuracao.getHttpClient().newCall(request).execute();
             } catch (IOException e) {
                 e.printStackTrace();
-                DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "Ocorreu um " +
+                DialogHelper.mostrarErroFatal(LoginSigaapifscFrame.this, "Ocorreu um " +
                         "erro ao tentar acessar o Sigaapifsc! Verifique sua conexão com a internet e URL " +
                         "para o Sigaapifsc!");
                 return;
