@@ -5,8 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -25,7 +23,9 @@ public class LoginSigaapifscFrame extends CustomFrame {
 
     @Override
     public void iniciar() {
-        if (Configuracao.getProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE) != null) {
+        String jwt = Configuracao.getProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
+        if (jwt != null) {
+            Configuracao.setTokenJwt(jwt);
             proximaJanela();
             return;
         }
@@ -103,20 +103,9 @@ public class LoginSigaapifscFrame extends CustomFrame {
         // Botão de login
         JButton entrarButton = new JButton("Entrar");
         entrarButton.addActionListener(event -> {
-            // Cria a URL
-            URL urlAutenticacao;
-            try {
-                urlAutenticacao = new URL(Configuracao.getSigaapifscUrl(), "/acesso/autenticar");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                DialogHelper.mostrarErro(LoginSigaapifscFrame.this, "Ocorreu um " +
-                        "erro ao formar a URL para acessar o Sigaapifsc!");
-                return;
-            }
-
             // Envia a requisição
             Request request = new Request.Builder()
-                    .url(urlAutenticacao)
+                    .url(Configuracao.URL_AUTENTICACAO)
                     .addHeader("X-Usuario", usuarioField.getText())
                     .addHeader("X-Senha", new String(senhaField.getPassword()))
                     .post(RequestBody.create(new byte[0]))
@@ -174,9 +163,8 @@ public class LoginSigaapifscFrame extends CustomFrame {
     }
 
     private void proximaJanela() {
-        // TODO: Passar para a janela de login no SIGAA, que então passará para a Home
-        HomeFrame homeFrame = new HomeFrame(true);
-        homeFrame.iniciar();
+        LoginSigaaFrame loginSigaa = new LoginSigaaFrame(true);
+        loginSigaa.iniciar();
         dispose();
     }
 }

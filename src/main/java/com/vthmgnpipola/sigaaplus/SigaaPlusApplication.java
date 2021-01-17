@@ -6,7 +6,11 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.sigaaplus.gui.DialogHelper;
 import com.vthmgnpipola.sigaaplus.gui.LoginSigaapifscFrame;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.Objects;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,11 +20,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class SigaaPlusApplication {
     public void configurar() throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException,
             InstantiationException, IllegalAccessException {
-        // Os menus Java são colocados na barra de título no Windows 10
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        JDialog.setDefaultLookAndFeelDecorated(true);
-
         Configuracao.carregarPropriedades();
+        Configuracao.inicializarUrls();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 Configuracao.salvarPropriedades();
@@ -31,6 +32,24 @@ public class SigaaPlusApplication {
                         "configuração.");
             }
         }));
+
+        // Carrega a fonte customizada (Fira Code Retina)
+        try {
+            Font firaCodeRetina = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getClassLoader()
+                    .getResourceAsStream("FiraCode-Retina.ttf")));
+
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(firaCodeRetina);
+        } catch (FontFormatException e) {
+            e.printStackTrace();
+            DialogHelper.mostrarErro(null, "Erro ao carregar a fonte incluída! Isso não deveria " +
+                    "ocorrer, a menos que o arquivo do SIGAAPlus tenha sido alterado, portanto tente instalá-lo " +
+                    "novamente.");
+        }
+
+        // Os menus Java são colocados na barra de título no Windows 10
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JDialog.setDefaultLookAndFeelDecorated(true);
 
         // Instala o info dos temas FlatLaf
         FlatLightLaf.installLafInfo();

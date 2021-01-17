@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 import okhttp3.OkHttpClient;
@@ -18,6 +19,11 @@ public class Configuracao {
     public static final String PROPRIEDADE_JWT_PERSISTENTE = "jwt";
     public static final String PROPRIEDADE_HOME_DIMENSAO = "home.dimensao";
     public static final String PROPRIEDADE_HOME_MAXIMIZADA = "home.maximizada";
+    public static final String PROPRIEDADE_SENHA_SIGAA = "sigaa.senha";
+
+    public static URL URL_AUTENTICACAO;
+    public static URL URL_LOGIN;
+    public static URL URL_PING;
 
     private static Properties properties;
     private static final Path dataDirectory;
@@ -57,6 +63,25 @@ public class Configuracao {
         properties.store(Files.newOutputStream(arquivoPropriedades), "Este é o arquivo de propriedades do " +
                 "SIGAAPlus. Não compartilhe esse arquivo com ninguém, já que ele pode conter seus dados de acesso de " +
                 "sua conta do Sigaapifsc e SIGAA.");
+    }
+
+    public static void inicializarUrls() {
+        try {
+            URL_LOGIN = new URL(Configuracao.getSigaapifscUrl(), "/acesso/logar");
+            URL_AUTENTICACAO = new URL(Configuracao.getSigaapifscUrl(), "/acesso/autenticar");
+            URL_PING = new URL(Configuracao.getSigaapifscUrl(), "/acesso/ping");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            DialogHelper.mostrarErro(null, "Ocorreu um " +
+                    "erro ao formar a URL para acessar o Sigaapifsc!");
+
+            String urlSigaapifsc = JOptionPane.showInputDialog(
+                    "A URL para o Sigaapifsc pode estar errada, portanto insira a URL correta:",
+                    getProperty(PROPRIEDADE_URL_SIGAAPIFSC));
+            setProperty(PROPRIEDADE_URL_SIGAAPIFSC, urlSigaapifsc);
+
+            System.exit(-1);
+        }
     }
 
     public static void setProperty(String key, String value) {

@@ -9,6 +9,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -80,8 +81,7 @@ public class HomeFrame extends CustomFrame {
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
         // Aba de turmas
-        JPanel turmas = new JPanel();
-        tabbedPane.addTab("Turmas", turmas);
+        tabbedPane.addTab("Turmas", new JScrollPane(new TurmasPanel()));
 
         // Aba de tarefas
         JPanel tarefas = new JPanel();
