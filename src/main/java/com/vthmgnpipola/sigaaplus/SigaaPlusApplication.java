@@ -77,7 +77,7 @@ public class SigaaPlusApplication {
     }
 
     public void iniciar() {
-        LoginCadastroController.iniciar();
+        LoginCadastroController.getInstance().iniciar();
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException,

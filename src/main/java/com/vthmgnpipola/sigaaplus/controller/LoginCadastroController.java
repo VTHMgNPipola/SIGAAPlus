@@ -6,49 +6,72 @@ import com.vthmgnpipola.sigaaplus.view.DialogHelper;
 import com.vthmgnpipola.sigaaplus.view.HomeFrame;
 import com.vthmgnpipola.sigaaplus.view.LoginCadastroFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginCadastroController {
-    public static void iniciar() {
+    private static final LoginCadastroController instance = new LoginCadastroController();
+
+    private LoginCadastroController() {}
+
+    public static LoginCadastroController getInstance() {
+        return instance;
+    }
+
+    public void iniciar() {
         String jwt = Configuracao.getProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
         if (jwt != null) {
             Configuracao.setTokenJwt(jwt);
             if (checarSessaoSigaapifsc()) {
                 if (checarSessaoSigaa()) {
-                    abrirHome();
+                    iniciarTelaHome();
+                } else if (Configuracao.getProperty(Configuracao.PROPRIEDADE_SENHA_SIGAA) != null) {
+                    logarUsuarioSigaa(Configuracao.getProperty(Configuracao.PROPRIEDADE_SENHA_SIGAA),
+                            false, null);
                 } else {
-                    LoginCadastroFrame frame = new LoginCadastroFrame(LoginCadastroFrame.MODO_LOGIN_SIGAA);
-                    frame.setVisible(true);
+                    iniciarTelaLoginSigaa();
                 }
             } else {
                 Configuracao.setTokenJwt(null);
                 Configuracao.removeProperty(Configuracao.PROPRIEDADE_JWT_PERSISTENTE);
-                LoginCadastroFrame frame = new LoginCadastroFrame(LoginCadastroFrame.MODO_LOGIN_SIGAAPIFSC);
-                frame.setVisible(true);
+                iniciarTelaLoginSigaapifsc();
             }
         } else {
-            LoginCadastroFrame frame = new LoginCadastroFrame(LoginCadastroFrame.MODO_LOGIN_SIGAAPIFSC);
-            frame.setVisible(true);
+            iniciarTelaLoginSigaapifsc();
         }
     }
 
-    private static boolean checarSessaoSigaapifsc() {
+    private boolean checarSessaoSigaapifsc() {
         Request request = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_NOME).build();
         Response response = SigaapifscHelper.executarRequestSincrona(request);
         assert response != null;
         return response.code() == 200;
     }
 
-    private static boolean checarSessaoSigaa() {
+    private boolean checarSessaoSigaa() {
         Request request = SigaapifscHelper.construirRequestAutorizada(Configuracao.URL_PING).build();
         Response response = SigaapifscHelper.executarRequestSincrona(request);
         assert response != null;
         return response.code() == 200;
     }
 
-    private static void abrirHome() {
+    private void iniciarTelaLoginSigaapifsc() {
+        SwingUtilities.invokeLater(() -> {
+            LoginCadastroFrame frame = new LoginCadastroFrame(LoginCadastroFrame.MODO_LOGIN_SIGAAPIFSC);
+            frame.setVisible(true);
+        });
+    }
+
+    private void iniciarTelaLoginSigaa() {
+        SwingUtilities.invokeLater(() -> {
+            LoginCadastroFrame frame = new LoginCadastroFrame(LoginCadastroFrame.MODO_LOGIN_SIGAA);
+            frame.setVisible(true);
+        });
+    }
+
+    private void iniciarTelaHome() {
         HomeFrame homeFrame = new HomeFrame();
         homeFrame.setVisible(true);
     }
@@ -142,13 +165,19 @@ public class LoginCadastroController {
                 }
             }
 
-            frame.dispose();
-            abrirHome();
+            if (frame != null) {
+                frame.dispose();
+            }
+            iniciarTelaHome();
         } else if (response.code() == 400) {
             DialogHelper.mostrarErro(frame, "As credenciais para o SIGAA estão inválidas!");
         } else if (response.code() == 401) {
             DialogHelper.mostrarErro(frame, "Sessão Sigaapifsc inválida! Faça o login novamente.");
-            abrirTelaLoginSigaapifsc(frame);
+            if (frame != null) {
+                abrirTelaLoginSigaapifsc(frame);
+            } else {
+                iniciarTelaLoginSigaapifsc();
+            }
         }
     }
 }

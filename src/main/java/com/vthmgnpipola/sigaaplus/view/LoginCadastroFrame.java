@@ -32,7 +32,7 @@ public class LoginCadastroFrame extends FrameBasico {
 
     public LoginCadastroFrame(int modo) {
         super(textoTitulo[modo]);
-        LoginCadastroController controller = new LoginCadastroController();
+        LoginCadastroController controller = LoginCadastroController.getInstance();
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
