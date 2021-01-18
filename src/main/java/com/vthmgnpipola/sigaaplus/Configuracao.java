@@ -1,6 +1,6 @@
 package com.vthmgnpipola.sigaaplus;
 
-import com.vthmgnpipola.sigaaplus.gui.DialogHelper;
+import com.vthmgnpipola.sigaaplus.view.DialogHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -4,8 +4,8 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.vthmgnpipola.sigaaplus.gui.DialogHelper;
-import com.vthmgnpipola.sigaaplus.gui.LoginSigaapifscFrame;
+import com.vthmgnpipola.sigaaplus.controller.LoginCadastroController;
+import com.vthmgnpipola.sigaaplus.view.DialogHelper;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -77,8 +77,7 @@ public class SigaaPlusApplication {
     }
 
     public void iniciar() {
-        LoginSigaapifscFrame loginSigaapifscFrame = new LoginSigaapifscFrame(true);
-        loginSigaapifscFrame.iniciar();
+        LoginCadastroController.iniciar();
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException,
